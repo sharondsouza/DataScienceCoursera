@@ -1,7 +1,7 @@
 f1 <- character()
 f2 <- character()
 f3 <- character()
-pollutantmean <- function(dir,ptant,id, removeNA=TRUE) {
+pollutantmean <- function(dir,ptant,id=1:332) {
         for (i in id) {
                 if (0<i & i<10) {
                         f1 <- c(f1, paste(dir,'/00',i,'.csv',sep=''))
@@ -14,17 +14,28 @@ pollutantmean <- function(dir,ptant,id, removeNA=TRUE) {
                 }
         }
         files <- c(f1,f2,f3)
-        firstdata <- read.csv(files[1])
+        numfiles <- length(files)
         print (files)
-        #print (firstdata)
-        for (file in files) {
-                data <- rbind(firstdata,read.csv(files))
+        data <- read.csv(files[1])
+        num=2
+        while (num <= numfiles){
+                data <- rbind(data,read.csv(files[num]))
+                num=num+1
         }
-        #print(data)
-        nc <- ncol(data)
-        meanval <- numeric(nc)
-        for (i in 1:nc) {
-                meanval[i] <- mean(data[,i],na.rm = removeNA)
+        goodnit <- complete.cases(data[ ,3])
+        goodsul <- complete.cases(data[ ,2])
+        goodnitdata <- data[goodnit, ]
+        goodsuldata <- data[goodsul, ]
+        #print(goodnitdata)
+        #print(goodsuldata)
+        nitcol <- goodnitdata[ ,3]
+        sulfcol <- goodsuldata[ ,2]
+        if (ptant == 'sulfate') {
+                sulfate_mean <- mean(sulfcol) 
+                print(sulfate_mean)
         }
-        print (meanval)
+        else if (ptant == 'nitrate') {
+                nitrate_mean <- mean(nitcol)
+                print(nitrate_mean)
+        }
 }
